@@ -1,9 +1,9 @@
 //This file combines the multiple reducers you may have
 
 import {combineReducers} from 'redux'
-import bucketingReducer from './bucketingReducer'
+import optlyReducer from './optlyReducer'
 
 
 export default combineReducers({
-    bucketing:bucketingReducer
+    optlyInfo:optlyReducer
 });

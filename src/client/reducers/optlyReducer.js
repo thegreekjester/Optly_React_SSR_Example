@@ -1,9 +1,9 @@
-import  { BUCKETING } from '../actions'
+import  { FETCH } from '../actions'
 
 export default (state=[], action)=> {
     switch(action.type){
-        case BUCKETING:
-            return action.bucketing; 
+        case FETCH:
+            return action.optlyInfo; 
         default:
             return state;
     }

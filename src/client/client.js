@@ -21,12 +21,12 @@ let storeJSON = store.getState();
 
 // HAVE to initiate a new client on the front end to ensure the onReady function is available
 const client = optimizely.createInstance({
-    datafile:storeJSON.bucketing.datafile
+    datafile:storeJSON.optlyInfo.datafile
 })
 // Renders the BrowserRouter component that takes care of browser side routing
 //  hooks into the same div (of id "root")
 ReactDOM.hydrate(
-    <OptimizelyProvider optimizely={client} userId={storeJSON.bucketing.userID}>
+    <OptimizelyProvider optimizely={client} userId={storeJSON.optlyInfo.userID}>
         <Provider store={store}>
             <BrowserRouter>
                 <div>

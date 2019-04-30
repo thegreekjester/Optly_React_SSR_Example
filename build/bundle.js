@@ -111,27 +111,21 @@ module.exports = require("react-redux");
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.bucketing = exports.BUCKETING = undefined;
+exports.datafileFetch = exports.FETCH = undefined;
 
 var _axios = __webpack_require__(14);
 
 var _axios2 = _interopRequireDefault(_axios);
 
-var _jsWebSdk = __webpack_require__(15);
-
-var optimizelySDK = _interopRequireWildcard(_jsWebSdk);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-var BUCKETING = exports.BUCKETING = 'fetch_bucketing';
-var bucketing = exports.bucketing = function bucketing() {
+var FETCH = exports.FETCH = 'fetch_datafile';
+var datafileFetch = exports.datafileFetch = function datafileFetch() {
     return function () {
         var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(dispatch) {
-            var res, optimizelyClientInstance, userID;
+            var res, userID;
             return regeneratorRuntime.wrap(function _callee$(_context) {
                 while (1) {
                     switch (_context.prev = _context.next) {
@@ -141,20 +135,18 @@ var bucketing = exports.bucketing = function bucketing() {
 
                         case 2:
                             res = _context.sent;
-                            optimizelyClientInstance = optimizelySDK.createInstance({ datafile: res.data });
                             userID = 'Peter';
 
 
                             dispatch({
-                                type: BUCKETING,
-                                bucketing: {
+                                type: FETCH,
+                                optlyInfo: {
                                     datafile: res.data,
-                                    userID: userID,
-                                    client: optimizelyClientInstance
+                                    userID: userID
                                 }
                             });
 
-                        case 6:
+                        case 5:
                         case 'end':
                             return _context.stop();
                     }
@@ -299,15 +291,25 @@ var _reactRouterConfig = __webpack_require__(5);
 
 var _reactSdk = __webpack_require__(4);
 
+var _jsWebSdk = __webpack_require__(15);
+
+var optimizelySDK = _interopRequireWildcard(_jsWebSdk);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = function (req, store) {
-    // Take the react component "Home" and render it as a HTML string
-    // RendertoString method is only used on the server!
+    //get the store that server generated
     var storeJSON = store.getState();
+
+    // Instantiate client to use for server side rendering
+    var optimizelyClientInstance = optimizelySDK.createInstance({ datafile: storeJSON.optlyInfo.datafile });
+
+    // RendertoString method is only used on the server!
     var content = (0, _server.renderToString)(_react2.default.createElement(
         _reactSdk.OptimizelyProvider,
-        { optimizely: storeJSON.bucketing.client, userId: storeJSON.bucketing.userID, isServerSide: true },
+        { optimizely: optimizelyClientInstance, userId: storeJSON.optlyInfo.userID, isServerSide: true },
         _react2.default.createElement(
             _reactRedux.Provider,
             { store: store },
@@ -381,11 +383,6 @@ var OptlyInfo = function (_React$Component) {
     }
 
     _createClass(OptlyInfo, [{
-        key: 'componentDidMount',
-        value: function componentDidMount() {
-            this.props.bucketing();
-        }
-    }, {
         key: 'render',
         value: function render() {
             return _react2.default.createElement(
@@ -410,18 +407,18 @@ var OptlyInfo = function (_React$Component) {
 }(_react2.default.Component);
 
 function mapStateToProps(state) {
-    return { bucketing: state.bucketing };
+    return { optlyInfo: state.optlyInfo };
 }
 
 function loadData(store) {
-    return store.dispatch((0, _actions.bucketing)());
+    return store.dispatch((0, _actions.datafileFetch)());
 }
 
 exports.loadData = loadData;
 
 // Here we are providing functions (i.e the bucketing function) from the actions folder and make them available to the component
 
-exports.default = (0, _reactRedux.connect)(mapStateToProps, { bucketing: _actions.bucketing })(OptlyInfo);
+exports.default = (0, _reactRedux.connect)(mapStateToProps, { datafileFetch: _actions.datafileFetch })(OptlyInfo);
 
 /***/ }),
 /* 14 */
@@ -485,16 +482,16 @@ Object.defineProperty(exports, "__esModule", {
 
 var _redux = __webpack_require__(6);
 
-var _bucketingReducer = __webpack_require__(19);
+var _optlyReducer = __webpack_require__(19);
 
-var _bucketingReducer2 = _interopRequireDefault(_bucketingReducer);
+var _optlyReducer2 = _interopRequireDefault(_optlyReducer);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 //This file combines the multiple reducers you may have
 
 exports.default = (0, _redux.combineReducers)({
-    bucketing: _bucketingReducer2.default
+    optlyInfo: _optlyReducer2.default
 });
 
 /***/ }),
@@ -515,8 +512,8 @@ exports.default = function () {
     var action = arguments[1];
 
     switch (action.type) {
-        case _actions.BUCKETING:
-            return action.bucketing;
+        case _actions.FETCH:
+            return action.optlyInfo;
         default:
             return state;
     }

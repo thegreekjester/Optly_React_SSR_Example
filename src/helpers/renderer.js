@@ -5,15 +5,20 @@ import Routes from '../client/Routes.js'
 import { Provider } from 'react-redux'
 import { renderRoutes } from 'react-router-config'
 import { OptimizelyProvider } from '@optimizely/react-sdk';
+import * as optimizelySDK from '@optimizely/js-web-sdk'
 
 
 
 export default (req, store) => {
-    // Take the react component "Home" and render it as a HTML string
-    // RendertoString method is only used on the server!
+    //get the store that server generated
     let storeJSON = store.getState();
+
+    // Instantiate client to use for server side rendering
+    const optimizelyClientInstance = optimizelySDK.createInstance({ datafile: storeJSON.optlyInfo.datafile});
+
+    // RendertoString method is only used on the server!
     const content = renderToString(
-        <OptimizelyProvider optimizely={storeJSON.bucketing.client} userId={storeJSON.bucketing.userID} isServerSide={true}>
+        <OptimizelyProvider optimizely={optimizelyClientInstance} userId={storeJSON.optlyInfo.userID} isServerSide={true}>
             <Provider store={store}>
                 <StaticRouter location={req.url} context={{}}>
                     <div>
