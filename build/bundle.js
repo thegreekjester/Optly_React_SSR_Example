@@ -149,7 +149,8 @@ var bucketing = exports.bucketing = function bucketing() {
                                 type: BUCKETING,
                                 bucketing: {
                                     datafile: res.data,
-                                    userID: userID
+                                    userID: userID,
+                                    client: optimizelyClientInstance
                                 }
                             });
 

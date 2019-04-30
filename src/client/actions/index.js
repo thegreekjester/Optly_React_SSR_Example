@@ -13,7 +13,8 @@ export const bucketing = () => async dispatch => {
         type: BUCKETING,
         bucketing: {
             datafile:res.data,
-            userID:userID
+            userID:userID,
+            client:optimizelyClientInstance
         }
     })
 }
