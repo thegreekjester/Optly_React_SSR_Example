@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -80,7 +80,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _OptlyInfo = __webpack_require__(12);
+var _OptlyInfo = __webpack_require__(13);
 
 var _OptlyInfo2 = _interopRequireDefault(_OptlyInfo);
 
@@ -113,13 +113,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.bucketing = exports.BUCKETING = undefined;
 
-var _axios = __webpack_require__(13);
+var _axios = __webpack_require__(14);
 
 var _axios2 = _interopRequireDefault(_axios);
 
-var _optimizelySdk = __webpack_require__(14);
+var _jsWebSdk = __webpack_require__(15);
 
-var optimizelySDK = _interopRequireWildcard(_optimizelySdk);
+var optimizelySDK = _interopRequireWildcard(_jsWebSdk);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -131,7 +131,7 @@ var BUCKETING = exports.BUCKETING = 'fetch_bucketing';
 var bucketing = exports.bucketing = function bucketing() {
     return function () {
         var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(dispatch) {
-            var res, optimizelyClientInstance, userId, enabled;
+            var res, optimizelyClientInstance, userID;
             return regeneratorRuntime.wrap(function _callee$(_context) {
                 while (1) {
                     switch (_context.prev = _context.next) {
@@ -142,16 +142,18 @@ var bucketing = exports.bucketing = function bucketing() {
                         case 2:
                             res = _context.sent;
                             optimizelyClientInstance = optimizelySDK.createInstance({ datafile: res.data });
-                            userId = 'Peter';
-                            enabled = optimizelyClientInstance.isFeatureEnabled('first_feature', userId);
+                            userID = 'Peter';
 
 
                             dispatch({
                                 type: BUCKETING,
-                                bucketing: enabled
+                                bucketing: {
+                                    datafile: res.data,
+                                    userID: userID
+                                }
                             });
 
-                        case 7:
+                        case 6:
                         case 'end':
                             return _context.stop();
                     }
@@ -169,36 +171,42 @@ var bucketing = exports.bucketing = function bucketing() {
 /* 4 */
 /***/ (function(module, exports) {
 
-module.exports = require("react-router-config");
+module.exports = require("@optimizely/react-sdk");
 
 /***/ }),
 /* 5 */
 /***/ (function(module, exports) {
 
-module.exports = require("redux");
+module.exports = require("react-router-config");
 
 /***/ }),
 /* 6 */
+/***/ (function(module, exports) {
+
+module.exports = require("redux");
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-__webpack_require__(7);
+__webpack_require__(8);
 
-var _express = __webpack_require__(8);
+var _express = __webpack_require__(9);
 
 var _express2 = _interopRequireDefault(_express);
 
-var _renderer = __webpack_require__(9);
+var _renderer = __webpack_require__(10);
 
 var _renderer2 = _interopRequireDefault(_renderer);
 
-var _createStore = __webpack_require__(15);
+var _createStore = __webpack_require__(16);
 
 var _createStore2 = _interopRequireDefault(_createStore);
 
-var _reactRouterConfig = __webpack_require__(4);
+var _reactRouterConfig = __webpack_require__(5);
 
 var _Routes = __webpack_require__(1);
 
@@ -213,7 +221,7 @@ var app = (0, _express2.default)();
 app.use(_express2.default.static('public'));
 
 app.get('/favicon.ico', function (req, res) {
-    res.send(204);
+    res.sendStatus(204);
 });
 
 // Wildcard handler for any route
@@ -250,19 +258,19 @@ app.listen(3000, function () {
 });
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports) {
 
 module.exports = require("babel-polyfill");
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports) {
 
 module.exports = require("express");
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -276,9 +284,9 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _server = __webpack_require__(10);
+var _server = __webpack_require__(11);
 
-var _reactRouterDom = __webpack_require__(11);
+var _reactRouterDom = __webpack_require__(12);
 
 var _Routes = __webpack_require__(1);
 
@@ -286,46 +294,52 @@ var _Routes2 = _interopRequireDefault(_Routes);
 
 var _reactRedux = __webpack_require__(2);
 
-var _reactRouterConfig = __webpack_require__(4);
+var _reactRouterConfig = __webpack_require__(5);
+
+var _reactSdk = __webpack_require__(4);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = function (req, store) {
     // Take the react component "Home" and render it as a HTML string
     // RendertoString method is only used on the server!
+    var storeJSON = store.getState();
     var content = (0, _server.renderToString)(_react2.default.createElement(
-        _reactRedux.Provider,
-        { store: store },
+        _reactSdk.OptimizelyProvider,
+        { optimizely: storeJSON.bucketing.client, userId: storeJSON.bucketing.userID, isServerSide: true },
         _react2.default.createElement(
-            _reactRouterDom.StaticRouter,
-            { location: req.url, context: {} },
+            _reactRedux.Provider,
+            { store: store },
             _react2.default.createElement(
-                'div',
-                null,
-                (0, _reactRouterConfig.renderRoutes)(_Routes2.default)
+                _reactRouterDom.StaticRouter,
+                { location: req.url, context: {} },
+                _react2.default.createElement(
+                    'div',
+                    null,
+                    (0, _reactRouterConfig.renderRoutes)(_Routes2.default)
+                )
             )
         )
     ));
-
     //This the basic html template to send to the client, it includes the content (home component) as well as the client side bundle.js as a script tag
     // The reason the script tag below doesn't need something like "public/bundle.js" is because the public folder is the only thing available so its essentially the root directory
     return '\n    <html>\n        <head></head>\n        <body>\n        <div id=\'root\'>' + content + '</div>\n        <script>\n        window.INITIAL_STATE=' + JSON.stringify(store.getState()) + '\n        </script>\n        <script src=\'bundle.js\'></script>\n        </body>\n    </html>\n    ';
 };
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-dom/server");
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports) {
 
 module.exports = require("react-router-dom");
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -345,6 +359,8 @@ var _react2 = _interopRequireDefault(_react);
 var _reactRedux = __webpack_require__(2);
 
 var _actions = __webpack_require__(3);
+
+var _reactSdk = __webpack_require__(4);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -372,18 +388,19 @@ var OptlyInfo = function (_React$Component) {
         key: 'render',
         value: function render() {
             return _react2.default.createElement(
-                'div',
-                null,
-                'Here\'s your datafile:',
-                _react2.default.createElement(
-                    'div',
-                    null,
-                    this.props.bucketing && _react2.default.createElement(
-                        'div',
+                _reactSdk.OptimizelyFeature,
+                { feature: 'first_feature' },
+                function (featureEnabled) {
+                    return featureEnabled ? _react2.default.createElement(
+                        'p',
                         null,
-                        'YOU ARE ENABLED'
-                    )
-                )
+                        'enabled'
+                    ) : _react2.default.createElement(
+                        'p',
+                        null,
+                        'disabled'
+                    );
+                }
             );
         }
     }]);
@@ -406,19 +423,19 @@ exports.loadData = loadData;
 exports.default = (0, _reactRedux.connect)(mapStateToProps, { bucketing: _actions.bucketing })(OptlyInfo);
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
 module.exports = require("axios");
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
-module.exports = require("@optimizely/optimizely-sdk");
+module.exports = require("@optimizely/js-web-sdk");
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -428,13 +445,13 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _redux = __webpack_require__(5);
+var _redux = __webpack_require__(6);
 
-var _reduxThunk = __webpack_require__(16);
+var _reduxThunk = __webpack_require__(17);
 
 var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-var _reducers = __webpack_require__(17);
+var _reducers = __webpack_require__(18);
 
 var _reducers2 = _interopRequireDefault(_reducers);
 
@@ -449,13 +466,13 @@ exports.default = function () {
 // Do our imports
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports) {
 
 module.exports = require("redux-thunk");
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -465,9 +482,9 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _redux = __webpack_require__(5);
+var _redux = __webpack_require__(6);
 
-var _bucketingReducer = __webpack_require__(18);
+var _bucketingReducer = __webpack_require__(19);
 
 var _bucketingReducer2 = _interopRequireDefault(_bucketingReducer);
 
@@ -480,7 +497,7 @@ exports.default = (0, _redux.combineReducers)({
 });
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

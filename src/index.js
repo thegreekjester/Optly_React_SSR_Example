@@ -13,7 +13,7 @@ const app = express();
 app.use(express.static('public'));
 
 app.get('/favicon.ico', (req, res)=>{
-    res.send(204)
+    res.sendStatus(204)
 })
 
 // Wildcard handler for any route
