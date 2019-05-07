@@ -38,7 +38,7 @@ export const datafileFetch = () => async dispatch => {
 }
 ```
 
-***2. Within src/client/components/OptlyInfo.js add your featureTest key***
+***2. Within src/client/components/OptlyInfo.js add your feature key***
 
 ```javascript
 import React from 'react'
