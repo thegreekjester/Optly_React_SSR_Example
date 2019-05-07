@@ -6,7 +6,7 @@ import { OptimizelyFeature } from '@optimizely/react-sdk'
 class OptlyInfo extends React.Component {
     render() {
         return (
-            <OptimizelyFeature feature="first_feature">
+            <OptimizelyFeature feature="INSERT FEATURE KEY HERE">
                 { featureEnabled => (featureEnabled ? <p>enabled</p> : <p>disabled</p>)}
             </OptimizelyFeature>
         )

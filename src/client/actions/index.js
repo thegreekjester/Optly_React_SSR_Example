@@ -2,9 +2,9 @@ import axios from 'axios'
 
 export const FETCH = 'fetch_datafile'
 export const datafileFetch = () => async dispatch => {
-    const res = await axios.get('https://cdn.optimizely.com/datafiles/VCCTQUjFWZMiYVSuikaVuQ.json')
+    const res = await axios.get('INSERT DATAFILE URL HERE')
 
-    const userID = 'Peter'
+    const userID = 'INSERT USERID OF YOUR CHOICE HERE'
 
     dispatch({
         type: FETCH,

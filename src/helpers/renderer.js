@@ -15,7 +15,6 @@ export default (req, store) => {
 
     // Instantiate client to use for server side rendering
     const optimizelyClientInstance = optimizelySDK.createInstance({ datafile: storeJSON.optlyInfo.datafile});
-
     // RendertoString method is only used on the server!
     const content = renderToString(
         <OptimizelyProvider optimizely={optimizelyClientInstance} userId={storeJSON.optlyInfo.userID} isServerSide={true}>
